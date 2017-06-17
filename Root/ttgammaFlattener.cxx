@@ -15,13 +15,10 @@ void m_nan_cleaner_upper(vector<float> *variable){
 }
 
 void m_add_branches(
-  TChain *fChain, 
+  TChain *fChain,
+  TEntryList *entryList,
   TTree *newtree)
   {
-
-  int nentries = fChain->GetEntries();
-
-  std::cout<< nentries << " entries" << std::endl;
 
   newtree->Branch("jet_pt_2nd",&m_jet_pt_2nd);   
   newtree->Branch("jet_pt_3rd",&m_jet_pt_3rd);   
@@ -37,6 +34,7 @@ void m_add_branches(
   newtree->Branch("ph_mgammalept_sel",&m_ph_mgammalept_sel);   
   newtree->Branch("ph_mgammaleptlept_sel",&m_ph_mgammaleptlept_sel);   
   newtree->Branch("ph_HFT_MVA_sel",&m_ph_HFT_MVA_sel);   
+  newtree->Branch("ph_isoFCT_sel",&m_ph_isoFCT_sel);   
 
   newtree->Branch("jet_tagWeightBin_leading",&m_jet_tagWeightBin_leading);   
   newtree->Branch("jet_tagWeightBin_subleading",&m_jet_tagWeightBin_subleading);   
@@ -45,92 +43,106 @@ void m_add_branches(
   newtree->Branch("ph_SF_eff_sel",&m_ph_SF_eff_sel);   
   newtree->Branch("ph_SF_iso_sel",&m_ph_SF_iso_sel);   
 
-  activateBranches(fChain);
+  float total_events=0;
+  float total_events_unweighted=0;
 
-  for (int event = 0; event < nentries; event++) {
+  activateBranches(fChain); 
 
-    fChain->GetEntry(event);
+  int nentries = entryList->GetN();
+  std::cout<< nentries << " entries" << std::endl;
+
+  for (Long64_t event =0;event<nentries;event++) {
+    int entryNumber = fChain->GetEntryNumber(event);
+    if (entryNumber < 0) break;
+       fChain->GetEntry(entryNumber);
     loadBar(event, nentries, 100, 50);
- 
-    // We need a basic selection here
-    if(selph_index1 < 0){continue;}
+
+    total_events_unweighted=total_events_unweighted+1;
+    total_events = total_events + 1 * (weight_mc * weight_pileup
+          * weight_bTagSF_Continuous * ph_SF_eff->at(selph_index1)
+          * ph_SF_iso->at(selph_index1) 
+          * weight_leptonSF * weight_jvt * event_norm * event_lumi);
 
     // Get good photons
-    m_ph_drsubljet_sel = ph_drsubljet->at(selph_index1);
-    m_ph_drlept_sel = ph_drlept->at(selph_index1);
-    m_ph_e_sel = ph_e->at(selph_index1);
-    m_ph_phi_sel = ph_phi->at(selph_index1);
-    m_ph_drleadjet_sel = ph_drleadjet->at(selph_index1);
-    m_ph_mgammalept_sel = ph_mgammalept->at(selph_index1);
-    m_ph_mgammaleptlept_sel = ph_mgammaleptlept->at(selph_index1);
-    m_ph_HFT_MVA_sel = ph_HFT_MVA->at(selph_index1);
+    //m_ph_drsubljet_sel = ph_drsubljet->at(selph_index1);
+    //m_ph_drlept_sel = ph_drlept->at(selph_index1);
+    //m_ph_e_sel = ph_e->at(selph_index1);
+    //m_ph_phi_sel = ph_phi->at(selph_index1);
+    //m_ph_drleadjet_sel = ph_drleadjet->at(selph_index1);
+    //m_ph_mgammalept_sel = ph_mgammalept->at(selph_index1);
+    //m_ph_mgammaleptlept_sel = ph_mgammaleptlept->at(selph_index1);
+    //m_ph_HFT_MVA_sel = ph_HFT_MVA->at(selph_index1);
+    //m_ph_isoFCT_sel = ph_isoFCT->at(selph_index1);
 
-    // Get good weights
-    m_ph_SF_eff_sel = ph_SF_eff->at(selph_index1);
-    m_ph_SF_iso_sel = ph_SF_iso->at(selph_index1);
+    //// Get good weights
+    //m_ph_SF_eff_sel = ph_SF_eff->at(selph_index1);
+    //m_ph_SF_iso_sel = ph_SF_iso->at(selph_index1);
 
-    // Get certain jets 
-    try {
-      m_jet_pt_2nd = jet_pt->at(1);
-      } catch(const std::out_of_range& oor) {
-      continue;
-      }
-    try {
-      m_jet_pt_3rd = jet_pt->at(2);
-      } catch(const std::out_of_range& oor) {
-      continue;
-      }
-    try {
-      m_jet_pt_4th = jet_pt->at(3);
-      } catch(const std::out_of_range& oor) {
-      continue;
-      }
-    try {
-      m_jet_pt_5th = jet_pt->at(4);
-      } catch(const std::out_of_range& oor) {
-      continue;
-      }
-    try {
-      m_jet_pt_6th = jet_pt->at(5);
-      } catch(const std::out_of_range& oor) {
-      continue;
-      }
+    //// Get certain jets 
+    //try {
+    //  m_jet_pt_2nd = jet_pt->at(1);
+    //  } catch(const std::out_of_range& oor) {
+    //  continue;
+    //  }
+    //try {
+    //  m_jet_pt_3rd = jet_pt->at(2);
+    //  } catch(const std::out_of_range& oor) {
+    //  continue;
+    //  }
+    //try {
+    //  m_jet_pt_4th = jet_pt->at(3);
+    //  } catch(const std::out_of_range& oor) {
+    //  continue;
+    //  }
+    //try {
+    //  m_jet_pt_5th = jet_pt->at(4);
+    //  } catch(const std::out_of_range& oor) {
+    //  continue;
+    //  }
+    //try {
+    //  m_jet_pt_6th = jet_pt->at(5);
+    //  } catch(const std::out_of_range& oor) {
+    //  continue;
+    //  }
 
-    // Sort btag weigths and add to mbranch // 
-    std::sort (jet_tagWeightBin->begin(), jet_tagWeightBin->end(), std::greater<int>()); 
+    //// Sort btag weigths and add to mbranch // 
+    //std::sort (jet_tagWeightBin->begin(), jet_tagWeightBin->end(), std::greater<int>()); 
 
-    for (uint sorted = 0; sorted < jet_tagWeightBin->size(); sorted++) {
-      try {
-      m_jet_tagWeightBin_leading = jet_tagWeightBin->at(0);
-      } catch(const std::out_of_range& oor) {
-        continue;
-      }
-      try {
-      m_jet_tagWeightBin_subleading = jet_tagWeightBin->at(1);
-      } catch(const std::out_of_range& oor) {
-        continue;
-      }
-     try {
-      m_jet_tagWeightBin_subsubleading = jet_tagWeightBin->at(2);
-      } catch(const std::out_of_range& oor) {
-        continue;
-      }
-    }
+    //for (uint sorted = 0; sorted < jet_tagWeightBin->size(); sorted++) {
+    //  try {
+    //  m_jet_tagWeightBin_leading = jet_tagWeightBin->at(0);
+    //  } catch(const std::out_of_range& oor) {
+    //    continue;
+    //  }
+    //  try {
+    //  m_jet_tagWeightBin_subleading = jet_tagWeightBin->at(1);
+    //  } catch(const std::out_of_range& oor) {
+    //    continue;
+    //  }
+    // try {
+    //  m_jet_tagWeightBin_subsubleading = jet_tagWeightBin->at(2);
+    //  } catch(const std::out_of_range& oor) {
+    //    continue;
+    //  }
+    //}
 
     newtree->Fill();
 
   }// end event loop
+  std::cout << "Number of weighted events = "<< total_events << std::endl;
+  std::cout << "Number of unweighted events = "<< total_events_unweighted << std::endl;
 
 
 }// end add_nn loop
 
 int main(int argc, char** argv)
 {
-  gROOT->ProcessLine( "gErrorIgnoreLevel = kFatal;");
+  //gROOT->ProcessLine( "gErrorIgnoreLevel = kFatal;");
   std::cout << "Found " << argc-1 << " files to run over:" << std::endl;
 
   string inputPath = "/eos/atlas/user/c/caudron/TtGamma_ntuples/v007/CR1/";
-  string channels[] ={"ejets","mujets","ee","emu","mumu"};
+  //string channels[] ={"ejets","mujets","ee","emu","mumu"};
+  string channels[] ={"ejets"};
   // Where we save to:
   //string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007_btagVar_w_ELT_with_QCD/QE2/";
   string outputPath = "../CR1/";
@@ -147,10 +159,12 @@ int main(int argc, char** argv)
       string filename = argv[i];
       string file = inputPath+c+"/"+filename;
       string newPath = outputPath + c+"/"+filename;
+      std::cout<<"#######################################"<< std::endl;
       std::cout<<c<<": "<< filename<< std::endl;
-      std::cout<<c<<"Saving to "<<newPath<< std::endl;
+      std::cout<<c<<": Saving to "<<newPath<< std::endl;
 
       newfile = new TFile((newPath.c_str()), "update");
+
 
       // if (filename.find("QCDfakes") != std::string::npos) {
       //   fChain = new TChain("nominal_Loose");
@@ -160,13 +174,35 @@ int main(int argc, char** argv)
       // }
  
       fChain->Add((file).c_str());
+      TCut cut;
+      //We need a basic selection here
+      if (c.find("ejets") != std::string::npos) {
+        cut=" selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+      }
+      if (c.find("mujets") != std::string::npos) {
+        cut="event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+      }
+      if (c.find("ee") != std::string::npos) {
+        cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+      }
+      if (c.find("emu") != std::string::npos) {
+        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+      }
+      if (c.find("mumu") != std::string::npos) {
+        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+      }
+
+      fChain->Draw(">>entrylist",cut,"entrylist");
+      TEntryList *elist = (TEntryList*)gDirectory->Get("entrylist");
+ 
+      fChain->SetEntryList(elist);
       newtree = fChain->CloneTree(0);
       if(fChain->GetEntries() == 0){
         std::cout<<"No events, is this an error? Skipping..."<<std::endl;
         continue;
       }
-      newtree->SetName("nominal");
-      m_add_branches(fChain,newtree);
+      //newtree->SetName("nominal");
+      m_add_branches(fChain,elist,newtree);
       newfile->cd();
       newtree->Write();
       newfile->Close();

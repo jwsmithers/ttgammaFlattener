@@ -25,6 +25,7 @@
 #include "TSystemFile.h"
 #include <sstream>
 #include "TLorentzVector.h"
+#include "TEntryList.h"
 #include <memory>
 #include <typeinfo>
 #include "TGraph.h"
@@ -256,6 +257,7 @@ float m_ph_phi_sel;
 float m_ph_drleadjet_sel;
 float m_ph_mgammaleptlept_sel;
 float m_ph_HFT_MVA_sel;
+float m_ph_isoFCT_sel;
 
 float m_ph_SF_iso_sel;
 float m_ph_SF_eff_sel;
@@ -265,6 +267,13 @@ void activateBranches(TChain *chain){
 	// Activate branches for MC chain
 	#define SETBRANCH(branchName) chain->SetBranchAddress(#branchName,&branchName)
 	// variables
+        SETBRANCH(ph_pt);
+
+	SETBRANCH(event_ngoodphotons);
+	SETBRANCH(event_nbjets77);
+	SETBRANCH(met_met);
+	SETBRANCH(event_mll);
+	SETBRANCH(ph_isoFCT);
 	SETBRANCH(jet_pt);
 	SETBRANCH(event_mll);
 	SETBRANCH(met_met);
