@@ -239,6 +239,7 @@ Double_t        event_norm;
 Double_t        event_lumi;
 
 // new flattened variables
+float m_jet_pt_1st;
 float m_jet_pt_2nd;
 float m_jet_pt_3rd;
 float m_jet_pt_4th;

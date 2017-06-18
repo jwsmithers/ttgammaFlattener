@@ -21,6 +21,7 @@ void m_add_branches(
   string filename)
   {
 
+  newtree->Branch("jet_pt_1st",&m_jet_pt_1st);   
   newtree->Branch("jet_pt_2nd",&m_jet_pt_2nd);   
   newtree->Branch("jet_pt_3rd",&m_jet_pt_3rd);   
   newtree->Branch("jet_pt_4th",&m_jet_pt_4th);   
@@ -75,6 +76,11 @@ void m_add_branches(
 
     // Get certain jets 
     for(uint jetn = 0; jetn < jet_pt->size();jetn++){
+      try {
+        m_jet_pt_1st = jet_pt->at(0);
+        } catch(const std::out_of_range& oor) {
+        continue;
+        }
       try {
         m_jet_pt_2nd = jet_pt->at(1);
         } catch(const std::out_of_range& oor) {
