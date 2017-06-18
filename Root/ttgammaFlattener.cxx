@@ -17,7 +17,8 @@ void m_nan_cleaner_upper(vector<float> *variable){
 void m_add_branches(
   TChain *fChain,
   TEntryList *entryList,
-  TTree *newtree)
+  TTree *newtree,
+  string filename)
   {
 
   newtree->Branch("jet_pt_2nd",&m_jet_pt_2nd);   
@@ -123,11 +124,14 @@ void m_add_branches(
     }
 
     total_events_unweighted=total_events_unweighted+1;
-    total_events = total_events + 1 * (weight_mc * weight_pileup
+    if (filename.find("QCDfakes") != std::string::npos) {
+         total_events = total_events+1*weight_mm_ejets + 1*weight_mm_mujets;
+    } else {
+      total_events = total_events + 1 * (weight_mc * weight_pileup
           * weight_bTagSF_Continuous * ph_SF_eff->at(selph_index1)
           * ph_SF_iso->at(selph_index1)
           * weight_leptonSF * weight_jvt * event_norm * event_lumi);
-
+    }
     newtree->Fill();
 
   }// end event loop
@@ -143,9 +147,11 @@ int main(int argc, char** argv)
   std::cout << "Found " << argc-1 << " files to run over:" << std::endl;
 
   string inputPath = "/eos/atlas/user/c/caudron/TtGamma_ntuples/v007/CR1/";
-  string channels[] ={"ejets","mujets","ee","emu","mumu"};
+  //string inputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007/QE2/";
+  string channels[] ={"ejets","mujets","emu","ee","mumu"};
   // Where we save to:
-  //string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007_btagVar_w_ELT_with_QCD/QE2/";
+  // Remember to make the directory. I.e. mkdir ../SR1 ; cd ../SR1 ; mkdir emu mumu etc
+  // I'm just too lazy.
   string outputPath = "../SR1/";
 
   TTree *newtree;
@@ -170,7 +176,7 @@ int main(int argc, char** argv)
          fChain = new TChain("nominal_Loose");
        }
        else {
-        fChain = new TChain("nominal");
+         fChain = new TChain("nominal");
        }
  
       fChain->Add((file).c_str());
@@ -212,7 +218,7 @@ int main(int argc, char** argv)
         continue;
       }
       newtree->SetName("nominal");
-      m_add_branches(fChain,elist,newtree);
+      m_add_branches(fChain,elist,newtree, filename);
       newfile->cd();
       newtree->Write();
       newfile->Close();
