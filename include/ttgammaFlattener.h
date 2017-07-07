@@ -260,6 +260,14 @@ float m_ph_mgammaleptlept_sel;
 float m_ph_HFT_MVA_sel;
 float m_ph_isoFCT_sel;
 
+float m_ph_ptcone20_sel;
+float m_ph_ptcone30_sel;
+float m_ph_ptcone40_sel;
+
+float m_ph_topoetcone20_sel;
+float m_ph_topoetcone30_sel;
+float m_ph_topoetcone40_sel;
+
 float m_ph_SF_iso_sel;
 float m_ph_SF_eff_sel;
 
@@ -269,6 +277,14 @@ void activateBranches(TChain *chain){
 	#define SETBRANCH(branchName) chain->SetBranchAddress(#branchName,&branchName)
 	// variables
         SETBRANCH(ph_pt);
+
+	SETBRANCH(ph_ptcone20);
+	SETBRANCH(ph_ptcone30);
+	SETBRANCH(ph_ptcone40);
+
+	SETBRANCH(ph_topoetcone20);
+	SETBRANCH(ph_topoetcone30);
+	SETBRANCH(ph_topoetcone40);
 
 	SETBRANCH(event_ngoodphotons);
 	SETBRANCH(event_nbjets77);

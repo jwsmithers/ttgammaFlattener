@@ -38,6 +38,14 @@ void m_add_branches(
   newtree->Branch("ph_HFT_MVA_sel",&m_ph_HFT_MVA_sel);   
   newtree->Branch("ph_isoFCT_sel",&m_ph_isoFCT_sel);   
 
+  newtree->Branch("ph_ptcone20_sel",&m_ph_ptcone20_sel);   
+  newtree->Branch("ph_ptcone30_sel",&m_ph_ptcone30_sel);   
+  newtree->Branch("ph_ptcone40_sel",&m_ph_ptcone40_sel);   
+
+  newtree->Branch("ph_topoetcone20_sel",&m_ph_topoetcone20_sel);
+  newtree->Branch("ph_topoetcone30_sel",&m_ph_topoetcone30_sel);
+  newtree->Branch("ph_topoetcone40_sel",&m_ph_topoetcone40_sel);
+
   newtree->Branch("jet_tagWeightBin_leading",&m_jet_tagWeightBin_leading);   
   newtree->Branch("jet_tagWeightBin_subleading",&m_jet_tagWeightBin_subleading);   
   newtree->Branch("jet_tagWeightBin_subsubleading",&m_jet_tagWeightBin_subsubleading);   
@@ -69,6 +77,16 @@ void m_add_branches(
     m_ph_mgammaleptlept_sel = ph_mgammaleptlept->at(selph_index1);
     m_ph_HFT_MVA_sel = ph_HFT_MVA->at(selph_index1);
     m_ph_isoFCT_sel = ph_isoFCT->at(selph_index1);
+
+    m_ph_ptcone20_sel = ph_ptcone20->at(selph_index1);
+    m_ph_ptcone30_sel = ph_ptcone30->at(selph_index1);
+    m_ph_ptcone40_sel = ph_ptcone40->at(selph_index1);
+
+    m_ph_topoetcone20_sel = ph_topoetcone20->at(selph_index1);
+    m_ph_topoetcone30_sel = ph_topoetcone30->at(selph_index1);
+    m_ph_topoetcone40_sel = ph_topoetcone40->at(selph_index1);
+
+
 
     // Get good weights
     m_ph_SF_eff_sel = ph_SF_eff->at(selph_index1);
@@ -152,13 +170,15 @@ int main(int argc, char** argv)
   gROOT->ProcessLine( "gErrorIgnoreLevel = kFatal;");
   std::cout << "Found " << argc-1 << " files to run over:" << std::endl;
 
-  string inputPath = "/eos/atlas/user/c/caudron/TtGamma_ntuples/v007/CR1/";
-  //string inputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007/QE2/";
-  string channels[] ={"ejets","mujets","emu","ee","mumu"};
+  //string inputPath = "/eos/atlas/user/c/caudron/TtGamma_ntuples/v007/CR1/";
+  string inputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007/QE2/";
+  string channels[] ={"ejets","mujets"};
+  //string channels[] ={"ejets","mujets", "emu","mumu","ee"};
   // Where we save to:
   // Remember to make the directory. I.e. mkdir ../SR1 ; cd ../SR1 ; mkdir emu mumu etc
   // I'm just too lazy.
-  string outputPath = "../SR1/";
+  //string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007_training/QE2/";
+  string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007_training_looser/QE2/";
 
   TTree *newtree;
   TChain *fChain;
@@ -189,30 +209,45 @@ int main(int argc, char** argv)
       TCut cut;
       //Channel specific selection:
       if (c.find("ejets") != std::string::npos) {
-        cut=" selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // Direct SR cuts
+        //cut="(HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0  || HLT_e140_lhloose_nod0) && selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // Looser cut
+        cut="(HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0  || HLT_e140_lhloose_nod0) && selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 2 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("mujets") != std::string::npos) {
-        cut="event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // Direct SR cuts
+        //cut="(HLT_mu20_iloose_L1MU15 || HLT_mu50 || HLT_mu26_ivarmedium || HLT_mu50) && selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // Looser cut
+        cut="(HLT_mu20_iloose_L1MU15 || HLT_mu50 || HLT_mu26_ivarmedium || HLT_mu50) && selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 2 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("ee") != std::string::npos) {
-        cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        //cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // Looser cuts
+        cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("emu") != std::string::npos) {
         cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("mumu") != std::string::npos) {
-        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        //cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // Looser cuts
+        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
 
       TCut overlapRemoval;
-      // We could leave this for later, but it's a good
-      // way to cross check.
+      // Signal
       if(filename.find("ttgamma") != std::string::npos) {
         overlapRemoval="event_photonorigin<10";
-      } else {
-        //overlapRemoval="event_photonorigin>=10";
+      } 
+      // ttbar
+      if(filename.find("ttbar") != std::string::npos) {
+        overlapRemoval="event_photonorigin>=10";
+      } 
+      else{
         overlapRemoval="";
       }
+
+      
 
       fChain->Draw(">>entrylist",cut&&overlapRemoval,"entrylist");
       TEntryList *elist = (TEntryList*)gDirectory->Get("entrylist");
