@@ -26,4 +26,7 @@ target_link_libraries(Flattener ${ROOT_LIBRARIES} )
 add_executable(ttgammaFlattener Root/ttgammaFlattener.cxx)
 target_link_libraries(ttgammaFlattener Flattener)
 
+add_executable(unshittifyTree Root/unshittifyTree.cxx)
+target_link_libraries(unshittifyTree ${ROOT_LIBRARIES})
+
 
