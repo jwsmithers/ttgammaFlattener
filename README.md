@@ -8,6 +8,14 @@ Code to flatten ntuples for the training of the ELD in the ttgamma analysis
 
 `cmake ../`
 
-`make`
+`make ttgammaFlattener`
 
 `./ttgammaFlattener <someinput>.root`
+
+# unshittifyTree
+In case a tree has some bad variables, this will help get rid of them.
+
+`make unshittifyTree`
+
+`./unshittifyTree <someinput>.root`
+
