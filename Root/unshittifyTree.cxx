@@ -32,12 +32,11 @@ int main(int argc, char** argv)
   std::cout << "Found " << argc-1 << " files to run over:" << std::endl;
 
   string inputPath = "/eos/user/c/caudron/TtGamma_ntuples/v009/CR1/";
-  //string channels[] ={"ejets","mujets"};
-  string channels[] ={"ejets","mujets", "emu","mumu","ee"};
+  string channels[] ={"ee","mumu","emu"};
   // Where we save to:
   // Remember to make the directory. I.e. mkdir ../SR1 ; cd ../SR1 ; mkdir emu mumu etc
   // I'm just too lazy.
-  string outputPath = "../CR1_clean/";
+  string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v009_clean/CR1/";
 
   for (int i = 1; i < argc; ++i) {
     for(const string &c : channels){

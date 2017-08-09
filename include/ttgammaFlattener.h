@@ -239,16 +239,16 @@ Double_t        event_norm;
 Double_t        event_lumi;
 
 // new flattened variables
-float m_jet_pt_1st;
-float m_jet_pt_2nd;
-float m_jet_pt_3rd;
-float m_jet_pt_4th;
-float m_jet_pt_5th;
-float m_jet_pt_6th;
+float m_jet_pt_1st_correct;
+float m_jet_pt_2nd_correct;
+float m_jet_pt_3rd_correct;
+float m_jet_pt_4th_correct;
+float m_jet_pt_5th_correct;
+float m_jet_pt_6th_correct;
 
-float m_jet_tagWeightBin_leading;
-float m_jet_tagWeightBin_subleading;
-float m_jet_tagWeightBin_subsubleading;
+float m_jet_tagWeightBin_leading_correct;
+float m_jet_tagWeightBin_subleading_correct;
+float m_jet_tagWeightBin_subsubleading_correct;
 
 float m_ph_mgammalept_sel;
 float m_ph_drsubljet_sel;

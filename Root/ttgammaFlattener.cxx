@@ -14,6 +14,7 @@ void m_nan_cleaner_upper(vector<float> *variable){
   }
 }
 
+
 void m_add_branches(
   TChain *fChain,
   TEntryList *entryList,
@@ -21,12 +22,12 @@ void m_add_branches(
   string filename)
   {
 
-  newtree->Branch("jet_pt_1st",&m_jet_pt_1st);   
-  newtree->Branch("jet_pt_2nd",&m_jet_pt_2nd);   
-  newtree->Branch("jet_pt_3rd",&m_jet_pt_3rd);   
-  newtree->Branch("jet_pt_4th",&m_jet_pt_4th);   
-  newtree->Branch("jet_pt_5th",&m_jet_pt_5th);   
-  newtree->Branch("jet_pt_6th",&m_jet_pt_6th);   
+  newtree->Branch("jet_pt_1st_correct",&m_jet_pt_1st_correct);   
+  newtree->Branch("jet_pt_2nd_correct",&m_jet_pt_2nd_correct);   
+  newtree->Branch("jet_pt_3rd_correct",&m_jet_pt_3rd_correct);   
+  newtree->Branch("jet_pt_4th_correct",&m_jet_pt_4th_correct);   
+  newtree->Branch("jet_pt_5th_correct",&m_jet_pt_5th_correct);   
+  newtree->Branch("jet_pt_6th_correct",&m_jet_pt_6th_correct);   
 
   newtree->Branch("ph_drsubljet_sel",&m_ph_drsubljet_sel);   
   newtree->Branch("ph_drlept_sel",&m_ph_drlept_sel);   
@@ -46,9 +47,9 @@ void m_add_branches(
   newtree->Branch("ph_topoetcone30_sel",&m_ph_topoetcone30_sel);
   newtree->Branch("ph_topoetcone40_sel",&m_ph_topoetcone40_sel);
 
-  newtree->Branch("jet_tagWeightBin_leading",&m_jet_tagWeightBin_leading);   
-  newtree->Branch("jet_tagWeightBin_subleading",&m_jet_tagWeightBin_subleading);   
-  newtree->Branch("jet_tagWeightBin_subsubleading",&m_jet_tagWeightBin_subsubleading);   
+  newtree->Branch("jet_tagWeightBin_leading_correct",&m_jet_tagWeightBin_leading_correct);   
+  newtree->Branch("jet_tagWeightBin_subleading_correct",&m_jet_tagWeightBin_subleading_correct);   
+  newtree->Branch("jet_tagWeightBin_subsubleading_correct",&m_jet_tagWeightBin_subsubleading_correct);   
 
   newtree->Branch("ph_SF_eff_sel",&m_ph_SF_eff_sel);   
   newtree->Branch("ph_SF_iso_sel",&m_ph_SF_iso_sel);   
@@ -95,32 +96,32 @@ void m_add_branches(
     // Get certain jets 
     for(uint jetn = 0; jetn < jet_pt->size();jetn++){
       try {
-        m_jet_pt_1st = jet_pt->at(0);
+        m_jet_pt_1st_correct = jet_pt->at(0);
         } catch(const std::out_of_range& oor) {
         continue;
         }
       try {
-        m_jet_pt_2nd = jet_pt->at(1);
+        m_jet_pt_2nd_correct = jet_pt->at(1);
         } catch(const std::out_of_range& oor) {
         continue;
         }
       try {
-        m_jet_pt_3rd = jet_pt->at(2);
+        m_jet_pt_3rd_correct = jet_pt->at(2);
         } catch(const std::out_of_range& oor) {
         continue;
         }
       try {
-        m_jet_pt_4th = jet_pt->at(3);
+        m_jet_pt_4th_correct = jet_pt->at(3);
         } catch(const std::out_of_range& oor) {
         continue;
         }
       try {
-        m_jet_pt_5th = jet_pt->at(4);
+        m_jet_pt_5th_correct = jet_pt->at(4);
         } catch(const std::out_of_range& oor) {
         continue;
         }
       try {
-        m_jet_pt_6th = jet_pt->at(5);
+        m_jet_pt_6th_correct = jet_pt->at(5);
         } catch(const std::out_of_range& oor) {
         continue;
         }
@@ -131,17 +132,17 @@ void m_add_branches(
 
     for (uint sorted = 0; sorted < jet_tagWeightBin->size(); sorted++) {
       try {
-      m_jet_tagWeightBin_leading = jet_tagWeightBin->at(0);
+      m_jet_tagWeightBin_leading_correct = jet_tagWeightBin->at(0);
       } catch(const std::out_of_range& oor) {
         continue;
       }
       try {
-      m_jet_tagWeightBin_subleading = jet_tagWeightBin->at(1);
+      m_jet_tagWeightBin_subleading_correct = jet_tagWeightBin->at(1);
       } catch(const std::out_of_range& oor) {
         continue;
       }
      try {
-      m_jet_tagWeightBin_subsubleading = jet_tagWeightBin->at(2);
+      m_jet_tagWeightBin_subsubleading_correct = jet_tagWeightBin->at(2);
       } catch(const std::out_of_range& oor) {
         continue;
       }
@@ -170,15 +171,15 @@ int main(int argc, char** argv)
   gROOT->ProcessLine( "gErrorIgnoreLevel = kFatal;");
   std::cout << "Found " << argc-1 << " files to run over:" << std::endl;
 
-  //string inputPath = "/eos/atlas/user/c/caudron/TtGamma_ntuples/v007/CR1/";
-  string inputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007/QE2/";
+  //string inputPath = "/eos/user/c/caudron/TtGamma_ntuples/v009/CR1/";
+  string inputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v009/QE2_yichen/";
   string channels[] ={"ejets","mujets"};
   //string channels[] ={"ejets","mujets", "emu","mumu","ee"};
   // Where we save to:
   // Remember to make the directory. I.e. mkdir ../SR1 ; cd ../SR1 ; mkdir emu mumu etc
   // I'm just too lazy.
-  //string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007_training/QE2/";
-  string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007_training_looser/QE2/";
+  //string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007_training/SR1/";
+  string outputPath = "../v009_training/QE2/";
 
   TTree *newtree;
   TChain *fChain;
@@ -206,32 +207,31 @@ int main(int argc, char** argv)
        }
  
       fChain->Add((file).c_str());
+
+
       TCut cut;
       //Channel specific selection:
       if (c.find("ejets") != std::string::npos) {
         // Direct SR cuts
-        //cut="(HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0  || HLT_e140_lhloose_nod0) && selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
-        // Looser cut
-        cut="(HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose || HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0  || HLT_e140_lhloose_nod0) && selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 2 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        //cut="selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // QE2 cuts
+        cut=" ((ejets_2015 && (HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose)) || (ejets_2016 && ((HLT_e26_lhtight_nod0_ivarloose && el_pt[0] < 61000.) || ((HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0) && el_pt[0] > 61000)))) && (selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1])";
+
       }
       if (c.find("mujets") != std::string::npos) {
         // Direct SR cuts
-        //cut="(HLT_mu20_iloose_L1MU15 || HLT_mu50 || HLT_mu26_ivarmedium || HLT_mu50) && selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
-        // Looser cut
-        cut="(HLT_mu20_iloose_L1MU15 || HLT_mu50 || HLT_mu26_ivarmedium || HLT_mu50) && selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 2 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        //cut="selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // QE2 cuts
+        cut="((mujets_2015 && (HLT_mu20_iloose_L1MU15 || HLT_mu50)) || (mujets_2016 && ((HLT_mu24 && mu_pt[0] < 51000.) || (HLT_mu50 && mu_pt[0] > 51000.)))) && (selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1])";
       }
       if (c.find("ee") != std::string::npos) {
-        //cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
-        // Looser cuts
-        cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("emu") != std::string::npos) {
         cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("mumu") != std::string::npos) {
-        //cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
-        // Looser cuts
-        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
 
       TCut overlapRemoval;
@@ -246,8 +246,6 @@ int main(int argc, char** argv)
       else{
         overlapRemoval="";
       }
-
-      
 
       fChain->Draw(">>entrylist",cut&&overlapRemoval,"entrylist");
       TEntryList *elist = (TEntryList*)gDirectory->Get("entrylist");
