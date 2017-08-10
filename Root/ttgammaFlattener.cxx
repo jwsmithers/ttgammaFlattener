@@ -19,7 +19,8 @@ void m_add_branches(
   TChain *fChain,
   TEntryList *entryList,
   TTree *newtree,
-  string filename)
+  string filename,
+  string channel)
   {
 
   newtree->Branch("jet_pt_1st_correct",&m_jet_pt_1st_correct);   
@@ -53,6 +54,15 @@ void m_add_branches(
 
   newtree->Branch("ph_SF_eff_sel",&m_ph_SF_eff_sel);   
   newtree->Branch("ph_SF_iso_sel",&m_ph_SF_iso_sel);   
+
+
+  newtree->Branch("weight_mm_ejets_peak",&m_weight_mm_ejets_peak);   
+  newtree->Branch("weight_mm_ejets_up",&m_weight_mm_ejets_up);   
+  newtree->Branch("weight_mm_ejets_down",&m_weight_mm_ejets_down);   
+
+  newtree->Branch("weight_mm_mujets_peak",&m_weight_mm_mujets_peak);  
+  newtree->Branch("weight_mm_mujets_up",&m_weight_mm_mujets_up);    
+  newtree->Branch("weight_mm_mujets_down",&m_weight_mm_mujets_down);
 
   float total_events=0;
   float total_events_unweighted=0;
@@ -148,9 +158,41 @@ void m_add_branches(
       }
     }
 
+    // If QCD, add some branches
+    if (filename.find("QCDfakes") != std::string::npos) {
+      if (channel == "ejets") {
+        m_weight_mm_ejets_peak = weights_mm_ejets->at(17);
+        m_weight_mm_ejets_up = weights_mm_ejets->at(52);
+        m_weight_mm_ejets_down = weights_mm_ejets->at(43);
+
+        m_weight_mm_mujets_peak = 0;
+        m_weight_mm_mujets_up = 0;
+        m_weight_mm_mujets_down = 0;
+
+      } else if (channel == "mujets") {
+
+        m_weight_mm_mujets_peak = weights_mm_mujets->at(75);
+        m_weight_mm_mujets_up = weights_mm_mujets->at(86);
+	m_weight_mm_mujets_down = weights_mm_mujets->at(91);
+
+        m_weight_mm_ejets_peak = 0;
+        m_weight_mm_ejets_up = 0;
+        m_weight_mm_ejets_down = 0;
+     }
+
+    } else {
+        m_weight_mm_ejets_peak = 0;
+        m_weight_mm_ejets_up = 0;
+        m_weight_mm_ejets_down = 0;
+        m_weight_mm_mujets_peak = 0;
+        m_weight_mm_mujets_up = 0;
+        m_weight_mm_mujets_down = 0;
+    }
+    
+
     total_events_unweighted=total_events_unweighted+1;
     if (filename.find("QCDfakes") != std::string::npos) {
-         total_events = total_events+1*weight_mm_ejets + 1*weight_mm_mujets;
+         total_events = total_events+1*weights_mm_ejets->at(17) + 1*weights_mm_mujets->at(75);
     } else {
       total_events = total_events + 1 * (weight_mc * weight_pileup
           * weight_bTagSF_Continuous * ph_SF_eff->at(selph_index1)
@@ -174,7 +216,7 @@ int main(int argc, char** argv)
   //string inputPath = "/eos/user/c/caudron/TtGamma_ntuples/v009/CR1/";
   string inputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v009/QE2_yichen/";
   string channels[] ={"ejets","mujets"};
-  //string channels[] ={"ejets","mujets", "emu","mumu","ee"};
+  //string channels[] ={"emu","mumu","ee"};
   // Where we save to:
   // Remember to make the directory. I.e. mkdir ../SR1 ; cd ../SR1 ; mkdir emu mumu etc
   // I'm just too lazy.
@@ -226,12 +268,14 @@ int main(int argc, char** argv)
       }
       if (c.find("ee") != std::string::npos) {
         cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        //cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("emu") != std::string::npos) {
         cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("mumu") != std::string::npos) {
         cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        //cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 &&  ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
 
       TCut overlapRemoval;
@@ -257,7 +301,7 @@ int main(int argc, char** argv)
         continue;
       }
       newtree->SetName("nominal");
-      m_add_branches(fChain,elist,newtree, filename);
+      m_add_branches(fChain,elist,newtree, filename,c);
       newfile->cd();
       newtree->Write();
       newfile->Close();

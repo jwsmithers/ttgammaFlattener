@@ -33,6 +33,8 @@ using namespace std;
 
 Float_t         weight_mm_ejets;
 Float_t         weight_mm_mujets;
+vector<float>   *weights_mm_ejets = nullptr;
+vector<float>   *weights_mm_mujets = nullptr;
 Float_t         weight_mc;
 Float_t         weight_pileup;
 Float_t         weight_leptonSF;
@@ -271,6 +273,13 @@ float m_ph_topoetcone40_sel;
 float m_ph_SF_iso_sel;
 float m_ph_SF_eff_sel;
 
+float m_weight_mm_ejets_peak;
+float m_weight_mm_ejets_up;
+float m_weight_mm_ejets_down;
+
+float m_weight_mm_mujets_peak;
+float m_weight_mm_mujets_up;
+float m_weight_mm_mujets_down;
 
 void activateBranches(TChain *chain){
 	// Activate branches for MC chain
@@ -314,6 +323,8 @@ void activateBranches(TChain *chain){
 	// Weights
 	SETBRANCH(weight_mm_ejets);
 	SETBRANCH(weight_mm_mujets);
+        SETBRANCH(weights_mm_ejets);
+        SETBRANCH(weights_mm_mujets);
 	SETBRANCH(ph_SF_iso);
 	SETBRANCH(ph_SF_eff);
 	SETBRANCH(weight_mc);
