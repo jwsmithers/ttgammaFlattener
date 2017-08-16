@@ -108,35 +108,38 @@ void m_add_branches(
       try {
         m_jet_pt_1st_correct = jet_pt->at(0);
         } catch(const std::out_of_range& oor) {
-        continue;
+        m_jet_pt_1st_correct = 0;
         }
       try {
         m_jet_pt_2nd_correct = jet_pt->at(1);
         } catch(const std::out_of_range& oor) {
-        continue;
+        m_jet_pt_2nd_correct = 0;
         }
       try {
         m_jet_pt_3rd_correct = jet_pt->at(2);
         } catch(const std::out_of_range& oor) {
-        continue;
+        m_jet_pt_3rd_correct = 0;
         }
       try {
         m_jet_pt_4th_correct = jet_pt->at(3);
         } catch(const std::out_of_range& oor) {
-        continue;
+        m_jet_pt_4th_correct = 0;
         }
       try {
         m_jet_pt_5th_correct = jet_pt->at(4);
         } catch(const std::out_of_range& oor) {
-        continue;
+        m_jet_pt_5th_correct = 0;
         }
       try {
         m_jet_pt_6th_correct = jet_pt->at(5);
         } catch(const std::out_of_range& oor) {
-        continue;
+        m_jet_pt_6th_correct = 0;
         }
     }
 
+    m_jet_tagWeightBin_leading_correct = -2;
+    m_jet_tagWeightBin_subleading_correct = -2;
+    m_jet_tagWeightBin_subsubleading_correct = -2;
     // Sort btag weigths and add to mbranch // 
     std::sort (jet_tagWeightBin->begin(), jet_tagWeightBin->end(), std::greater<int>()); 
 
@@ -213,23 +216,24 @@ int main(int argc, char** argv)
   gROOT->ProcessLine( "gErrorIgnoreLevel = kFatal;");
   std::cout << "Found " << argc-1 << " files to run over:" << std::endl;
 
-  //string inputPath = "/eos/user/c/caudron/TtGamma_ntuples/v009/CR1/";
-  string inputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v009/QE2_yichen/";
-  string channels[] ={"ejets","mujets"};
-  //string channels[] ={"emu","mumu","ee"};
+  string inputPath = "/eos/user/c/caudron/TtGamma_ntuples/v009/CR1/";
+  // string inputPath = "/eos/user/j/jwsmith/reprocessedNtuples/v009/QE2_yichen/";
+  // string channels[] ={"ejets","mujets"};
+  string channels[] ={"ee","mumu","emu"};
   // Where we save to:
   // Remember to make the directory. I.e. mkdir ../SR1 ; cd ../SR1 ; mkdir emu mumu etc
   // I'm just too lazy.
-  //string outputPath = "/eos/atlas/user/j/jwsmith/reprocessedNtuples/v007_training/SR1/";
-  string outputPath = "../v009_training/QE2/";
+  string outputPath = "/eos/user/j/jwsmith/reprocessedNtuples/v009_training/SR1/";
+  // string outputPath = "/eos/user/j/jwsmith/reprocessedNtuples/v009_training/QE2/";
 
-  TTree *newtree;
-  TChain *fChain;
-  TFile *newfile;
 
   for (int i = 1; i < argc; ++i) {
     for(const string &c : channels){
 
+
+      TTree *newtree=nullptr;
+      TChain *fChain=nullptr;
+      TFile *newfile=nullptr;
 
       string filename = argv[i];
       string file = inputPath+c+"/"+filename;
@@ -255,27 +259,27 @@ int main(int argc, char** argv)
       //Channel specific selection:
       if (c.find("ejets") != std::string::npos) {
         // Direct SR cuts
-        //cut="selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // cut="selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
         // QE2 cuts
         cut=" ((ejets_2015 && (HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose)) || (ejets_2016 && ((HLT_e26_lhtight_nod0_ivarloose && el_pt[0] < 61000.) || ((HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0) && el_pt[0] > 61000)))) && (selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && abs(ph_mgammalept[selph_index1] - 91188) > 5000 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1])";
 
       }
       if (c.find("mujets") != std::string::npos) {
         // Direct SR cuts
-        //cut="selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // cut="selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
         // QE2 cuts
         cut="((mujets_2015 && (HLT_mu20_iloose_L1MU15 || HLT_mu50)) || (mujets_2016 && ((HLT_mu24 && mu_pt[0] < 51000.) || (HLT_mu50 && mu_pt[0] > 51000.)))) && (selph_index1 >=0 && event_ngoodphotons==1 && event_njets >= 4 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1])";
       }
       if (c.find("ee") != std::string::npos) {
-        cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
-        //cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && event_njets >= 2  && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && event_njets >= 2 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("emu") != std::string::npos) {
-        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && event_njets >= 2 && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
       if (c.find("mumu") != std::string::npos) {
-        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
-        //cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 &&  ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        // cut="selph_index1 >=0 && event_ngoodphotons == 1 && event_nbjets77 >= 1 && event_njets >= 2 && met_met > 30000 && (event_mll < 85000 || event_mll > 95000) && (ph_mgammaleptlept[selph_index1] < 85000 || ph_mgammaleptlept[selph_index1] > 95000) && ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
+        cut="event_ngoodphotons == 1 && event_nbjets77 >= 1 && event_njets >= 2  &&  ph_drlept[selph_index1] > 1.0 && ph_isoFCT[selph_index1]";
       }
 
       TCut overlapRemoval;
@@ -304,7 +308,9 @@ int main(int argc, char** argv)
       m_add_branches(fChain,elist,newtree, filename,c);
       newfile->cd();
       newtree->Write();
-      newfile->Close();
+      // delete newtree;
+      // delete newfile;
+      // delete fChain;
     }
   }
 

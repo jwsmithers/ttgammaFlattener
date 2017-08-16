@@ -241,45 +241,45 @@ Double_t        event_norm;
 Double_t        event_lumi;
 
 // new flattened variables
-float m_jet_pt_1st_correct;
-float m_jet_pt_2nd_correct;
-float m_jet_pt_3rd_correct;
-float m_jet_pt_4th_correct;
-float m_jet_pt_5th_correct;
-float m_jet_pt_6th_correct;
+float m_jet_pt_1st_correct=0;
+float m_jet_pt_2nd_correct=0;
+float m_jet_pt_3rd_correct=0;
+float m_jet_pt_4th_correct=0;
+float m_jet_pt_5th_correct=0;
+float m_jet_pt_6th_correct=0;
 
-float m_jet_tagWeightBin_leading_correct;
-float m_jet_tagWeightBin_subleading_correct;
-float m_jet_tagWeightBin_subsubleading_correct;
+int m_jet_tagWeightBin_leading_correct;
+int m_jet_tagWeightBin_subleading_correct;
+int m_jet_tagWeightBin_subsubleading_correct;
 
-float m_ph_mgammalept_sel;
-float m_ph_drsubljet_sel;
-float m_ph_drlept_sel;
-float m_ph_e_sel;
-float m_ph_phi_sel;
-float m_ph_drleadjet_sel;
-float m_ph_mgammaleptlept_sel;
-float m_ph_HFT_MVA_sel;
-float m_ph_isoFCT_sel;
+float m_ph_mgammalept_sel=0;
+float m_ph_drsubljet_sel=0;
+float m_ph_drlept_sel=0;
+float m_ph_e_sel=0;
+float m_ph_phi_sel=0;
+float m_ph_drleadjet_sel=0;
+float m_ph_mgammaleptlept_sel=0;
+float m_ph_HFT_MVA_sel=0;
+float m_ph_isoFCT_sel=0;
 
-float m_ph_ptcone20_sel;
-float m_ph_ptcone30_sel;
-float m_ph_ptcone40_sel;
+float m_ph_ptcone20_sel=0;
+float m_ph_ptcone30_sel=0;
+float m_ph_ptcone40_sel=0;
 
-float m_ph_topoetcone20_sel;
-float m_ph_topoetcone30_sel;
-float m_ph_topoetcone40_sel;
+float m_ph_topoetcone20_sel=0;
+float m_ph_topoetcone30_sel=0;
+float m_ph_topoetcone40_sel=0;
 
-float m_ph_SF_iso_sel;
-float m_ph_SF_eff_sel;
+float m_ph_SF_iso_sel=0;
+float m_ph_SF_eff_sel=0;
 
-float m_weight_mm_ejets_peak;
-float m_weight_mm_ejets_up;
-float m_weight_mm_ejets_down;
+float m_weight_mm_ejets_peak=0;
+float m_weight_mm_ejets_up=0;
+float m_weight_mm_ejets_down=0;
 
-float m_weight_mm_mujets_peak;
-float m_weight_mm_mujets_up;
-float m_weight_mm_mujets_down;
+float m_weight_mm_mujets_peak=0;
+float m_weight_mm_mujets_up=0;
+float m_weight_mm_mujets_down=0;
 
 void activateBranches(TChain *chain){
 	// Activate branches for MC chain
@@ -317,14 +317,14 @@ void activateBranches(TChain *chain){
 	SETBRANCH(event_njets);
 	// misc
 	SETBRANCH(selph_index1);
-        SETBRANCH(jet_tagWeightBin);
-        SETBRANCH(mcChannelNumber);
-        SETBRANCH(event_photonorigin);
+	SETBRANCH(jet_tagWeightBin);
+	SETBRANCH(mcChannelNumber);
+	SETBRANCH(event_photonorigin);
 	// Weights
 	SETBRANCH(weight_mm_ejets);
 	SETBRANCH(weight_mm_mujets);
-        SETBRANCH(weights_mm_ejets);
-        SETBRANCH(weights_mm_mujets);
+	SETBRANCH(weights_mm_ejets);
+	SETBRANCH(weights_mm_mujets);
 	SETBRANCH(ph_SF_iso);
 	SETBRANCH(ph_SF_eff);
 	SETBRANCH(weight_mc);
